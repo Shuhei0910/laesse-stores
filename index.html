@@ -6,42 +6,44 @@
   <title>取扱店一覧 | LAÉSSE</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Noto+Serif+JP:wght@200;300;400;500&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&display=swap" rel="stylesheet" />
 
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --gold:        #C9A96E;
-      --gold-light:  #E8D5AA;
-      --gold-dark:   #9E7B3C;
-      --white:       #FFFFFF;
-      --off-white:   #FAFAF8;
-      --cream:       #F3EDE2;
-      --dark:        #1A1614;
-      --dark-mid:    #2C2723;
-      --gray:        #6B6560;
-      --gray-light:  #C8C2BC;
-      --border:      rgba(201,169,110,0.28);
+      --gold:        #a27f44;
+      --gold-light:  #e7cf8a;
+      --gold-dark:   #8c6a2f;
+      --gold-mid:    #c9a85a;
+      --white:       #ffffff;
+      --off-white:   #ffffff;
+      --cream:       #f8f5f0;
+      --dark:        #393a3a;
+      --dark-mid:    #373737;
+      --gray:        #555555;
+      --gray-light:  #999999;
+      --border:      rgba(162,127,68,0.25);
     }
 
     html { scroll-behavior: smooth; }
 
     body {
-      font-family: 'Noto Serif JP', Georgia, serif;
+      font-family: "Times New Roman", "游明朝", "Yu Mincho", "Hiragino Mincho ProN", "MS Mincho", serif;
       background: var(--off-white);
-      color: var(--dark);
+      color: var(--dark-mid);
       line-height: 1.8;
       overflow-x: hidden;
     }
 
     /* ─── HEADER ─────────────────────────────── */
     header {
-      background: var(--dark);
+      background: #fff;
       position: sticky;
       top: 0;
       z-index: 200;
-      border-bottom: 1px solid rgba(201,169,110,0.22);
+      border-bottom: 1px solid rgba(162,127,68,0.2);
+      box-shadow: 0 1px 8px rgba(0,0,0,0.05);
     }
     .header-inner {
       max-width: 1200px;
@@ -67,7 +69,7 @@
       font-size: 12px;
       font-weight: 400;
       letter-spacing: 0.22em;
-      color: var(--gray-light);
+      color: #555;
       text-decoration: none;
       text-transform: uppercase;
       transition: color 0.3s;
@@ -85,7 +87,7 @@
     .page-hero::before {
       content: '';
       position: absolute; inset: 0;
-      background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(201,169,110,0.07) 0%, transparent 70%);
+      background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(162,127,68,0.08) 0%, transparent 70%);
       pointer-events: none;
     }
     .page-hero::after {
@@ -97,7 +99,7 @@
       font-family: 'Cormorant Garamond', serif;
       font-size: clamp(80px, 14vw, 160px);
       font-weight: 300;
-      color: rgba(201,169,110,0.04);
+      color: rgba(162,127,68,0.05);
       letter-spacing: 0.25em;
       white-space: nowrap;
       pointer-events: none;
@@ -320,9 +322,9 @@
       transform-origin: bottom;
     }
     .store-card:hover {
-      box-shadow: 0 8px 32px rgba(26,22,20,0.1);
+      box-shadow: 0 8px 32px rgba(55,55,55,0.1);
       transform: translateY(-2px);
-      border-color: rgba(201,169,110,0.55);
+      border-color: rgba(162,127,68,0.55);
     }
     .store-card:hover::after { transform: scaleY(1); }
 
@@ -336,18 +338,18 @@
       margin-bottom: 5px;
     }
     .card-name {
-      font-family: 'Noto Serif JP', serif;
+      font-family: "游明朝", "Yu Mincho", "Hiragino Mincho ProN", "MS Mincho", serif;
       font-size: 14px;
       font-weight: 400;
-      color: var(--dark);
+      color: var(--dark-mid);
       letter-spacing: 0.04em;
       margin-bottom: 3px;
       line-height: 1.5;
     }
     .card-yomi {
-      font-family: 'Noto Serif JP', serif;
+      font-family: "游明朝", "Yu Mincho", "Hiragino Mincho ProN", serif;
       font-size: 10px;
-      font-weight: 200;
+      font-weight: 400;
       color: var(--gray);
       letter-spacing: 0.1em;
     }
@@ -376,7 +378,7 @@
     /* ─── MODAL ──────────────────────────────── */
     .modal-overlay {
       position: fixed; inset: 0;
-      background: rgba(20,16,14,0.82);
+      background: rgba(57,58,58,0.82);
       z-index: 500;
       display: flex;
       align-items: center;
@@ -422,18 +424,18 @@
       margin-bottom: 10px;
     }
     .modal-name {
-      font-family: 'Noto Serif JP', serif;
+      font-family: "游明朝", "Yu Mincho", "Hiragino Mincho ProN", "MS Mincho", serif;
       font-size: 20px;
-      font-weight: 400;
-      color: var(--dark);
+      font-weight: 500;
+      color: var(--dark-mid);
       letter-spacing: 0.06em;
       line-height: 1.55;
       margin-bottom: 6px;
     }
     .modal-yomi {
-      font-family: 'Noto Serif JP', serif;
+      font-family: "游明朝", "Yu Mincho", "Hiragino Mincho ProN", serif;
       font-size: 11px;
-      font-weight: 200;
+      font-weight: 400;
       color: var(--gray);
       letter-spacing: 0.12em;
       margin-bottom: 28px;
@@ -466,9 +468,9 @@
       line-height: 1.4;
     }
     .dl-value {
-      font-family: 'Noto Serif JP', serif;
+      font-family: "游明朝", "Yu Mincho", "Hiragino Mincho ProN", "MS Mincho", serif;
       font-size: 13px;
-      font-weight: 300;
+      font-weight: 400;
       color: var(--dark-mid);
       letter-spacing: 0.05em;
       line-height: 1.75;
@@ -902,7 +904,7 @@ window.initMap = function () {
     { elementType: 'geometry',             stylers: [{ color: '#f3ede2' }] },
     { elementType: 'labels.text.fill',     stylers: [{ color: '#4a4540' }] },
     { elementType: 'labels.text.stroke',   stylers: [{ color: '#f3ede2' }] },
-    { featureType: 'administrative',       elementType: 'geometry.stroke', stylers: [{ color: '#c9a96e' }] },
+    { featureType: 'administrative',       elementType: 'geometry.stroke', stylers: [{ color: '#a27f44' }] },
     { featureType: 'landscape.natural',    elementType: 'geometry',        stylers: [{ color: '#e8e0d0' }] },
     { featureType: 'poi',                  elementType: 'geometry',        stylers: [{ color: '#e2dbd0' }] },
     { featureType: 'poi',                  elementType: 'labels.text.fill',stylers: [{ color: '#93887b' }] },
@@ -939,13 +941,13 @@ window.initMap = function () {
     '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="42" viewBox="0 0 32 42">',
     '  <defs>',
     '    <radialGradient id="g" cx="40%" cy="35%" r="60%">',
-    '      <stop offset="0%" stop-color="#E8D5AA"/>',
-    '      <stop offset="100%" stop-color="#9E7B3C"/>',
+    '      <stop offset="0%" stop-color="#e7cf8a"/>',
+    '      <stop offset="100%" stop-color="#8c6a2f"/>',
     '    </radialGradient>',
     '  </defs>',
     '  <path d="M16 0C7.16 0 0 7.16 0 16c0 9.6 16 26 16 26S32 25.6 32 16C32 7.16 24.84 0 16 0z"',
-    '        fill="url(#g)" stroke="#7A5C2A" stroke-width="1"/>',
-    '  <circle cx="16" cy="16" r="5" fill="#1A1614" opacity="0.85"/>',
+    '        fill="url(#g)" stroke="#6b5020" stroke-width="1"/>',
+    '  <circle cx="16" cy="16" r="5" fill="#393a3a" opacity="0.85"/>',
     '</svg>'
   ].join('');
 
@@ -974,7 +976,7 @@ window.initMap = function () {
         '">' +
           '<p style="' +
             'font-size:13px;font-weight:500;' +
-            'color:#1A1614;' +
+            'color:#373737;' +
             'letter-spacing:0.04em;' +
             'margin-bottom:6px;' +
             'line-height:1.5;' +
@@ -986,7 +988,7 @@ window.initMap = function () {
             'line-height:1.7;' +
             'margin-bottom:4px;' +
           '">' + store.address + '</p>' +
-          '<p style="font-size:11px;color:#9E7B3C;letter-spacing:0.05em;">' + store.tel + '</p>' +
+          '<p style="font-size:11px;color:#8c6a2f;letter-spacing:0.05em;">' + store.tel + '</p>' +
         '</div>'
       );
       infoWindow.open(map, marker);
