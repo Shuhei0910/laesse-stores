@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>取扱店一覧 | LAÉSSE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Noto+Serif+JP:wght@200;300;400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold:        #C9A96E;
+      --gold-light:  #E8D5AA;
+      --gold-dark:   #9E7B3C;
+      --white:       #FFFFFF;
+      --off-white:   #FAFAF8;
+      --cream:       #F3EDE2;
+      --dark:        #1A1614;
+      --dark-mid:    #2C2723;
+      --gray:        #6B6560;
+      --gray-light:  #C8C2BC;
+      --border:      rgba(201,169,110,0.28);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Noto Serif JP', Georgia, serif;
+      background: var(--off-white);
+      color: var(--dark);
+      line-height: 1.8;
+      overflow-x: hidden;
+    }
+
+    /* ─── HEADER ─────────────────────────────── */
+    header {
+      background: var(--dark);
+      position: sticky;
+      top: 0;
+      z-index: 200;
+      border-bottom: 1px solid rgba(201,169,110,0.22);
+    }
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 40px;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px;
+      font-weight: 400;
+      letter-spacing: 0.22em;
+      color: var(--gold);
+      text-decoration: none;
+      font-style: italic;
+    }
+    nav { display: flex; gap: 30px; }
+    nav a {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      font-weight: 400;
+      letter-spacing: 0.22em;
+      color: var(--gray-light);
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: color 0.3s;
+    }
+    nav a:hover, nav a.active { color: var(--gold); }
+
+    /* ─── PAGE HERO ──────────────────────────── */
+    .page-hero {
+      background: var(--dark);
+      padding: 90px 40px 80px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .page-hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(201,169,110,0.07) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .page-hero::after {
+      content: 'STORES';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(80px, 14vw, 160px);
+      font-weight: 300;
+      color: rgba(201,169,110,0.04);
+      letter-spacing: 0.25em;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+    .hero-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.5em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+    .page-hero h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(38px, 6vw, 60px);
+      font-weight: 300;
+      color: var(--white);
+      letter-spacing: 0.12em;
+      line-height: 1.15;
+      position: relative;
+    }
+    .page-hero h1 em { font-style: italic; color: var(--gold-light); }
+    .hero-sub {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 12px;
+      font-weight: 200;
+      color: rgba(255,255,255,0.38);
+      letter-spacing: 0.3em;
+      margin-top: 14px;
+    }
+    .gold-rule {
+      width: 50px; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold), transparent);
+      margin: 28px auto 0;
+    }
+
+    /* ─── SECTION WRAPPER ────────────────────── */
+    .section { padding: 72px 40px; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .section-head { text-align: center; margin-bottom: 52px; }
+    .section-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.5em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(28px, 3.5vw, 40px);
+      font-weight: 300;
+      color: var(--dark);
+      letter-spacing: 0.08em;
+    }
+    .section-title em { font-style: italic; color: var(--gold-dark); }
+
+    /* ─── MAP ────────────────────────────────── */
+    .map-section { background: var(--off-white); }
+    .map-wrap {
+      position: relative;
+      border: 1px solid var(--border);
+      box-shadow: 0 6px 40px rgba(26,22,20,0.09);
+    }
+    #map {
+      width: 100%;
+      height: 500px;
+      display: block;
+    }
+    .map-placeholder {
+      position: absolute; inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--cream);
+      pointer-events: none;
+      transition: opacity 0.4s;
+    }
+    .map-placeholder.hidden { opacity: 0; }
+    .map-placeholder-icon {
+      font-size: 36px;
+      margin-bottom: 12px;
+      opacity: 0.35;
+    }
+    .map-placeholder p {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      color: var(--gray);
+      letter-spacing: 0.2em;
+    }
+    .map-api-note {
+      margin-top: 14px;
+      text-align: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      color: var(--gray);
+      letter-spacing: 0.15em;
+    }
+    .map-api-note code {
+      font-family: monospace;
+      background: rgba(201,169,110,0.12);
+      color: var(--gold-dark);
+      padding: 2px 8px;
+      border-radius: 2px;
+    }
+
+    /* ─── STORES SECTION ─────────────────────── */
+    .stores-section { background: var(--cream); }
+
+    /* Filter */
+    .filter-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 44px;
+    }
+    .filter-label-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.3em;
+      color: var(--gray);
+      margin-right: 6px;
+      text-transform: uppercase;
+    }
+    .filter-btn {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 12px;
+      font-weight: 300;
+      letter-spacing: 0.08em;
+      padding: 7px 18px;
+      border: 1px solid var(--border);
+      background: var(--white);
+      color: var(--gray);
+      cursor: pointer;
+      transition: all 0.25s;
+      outline: none;
+      -webkit-appearance: none;
+    }
+    .filter-btn:hover {
+      border-color: var(--gold);
+      color: var(--gold-dark);
+      background: #fff;
+    }
+    .filter-btn.active {
+      background: var(--dark);
+      border-color: var(--dark);
+      color: var(--gold-light);
+    }
+
+    /* Count */
+    .store-count {
+      text-align: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      color: var(--gray);
+      letter-spacing: 0.2em;
+      margin-bottom: 40px;
+    }
+    .store-count strong { color: var(--gold-dark); font-size: 22px; font-weight: 400; }
+
+    /* Kana group */
+    .kana-group { margin-bottom: 52px; }
+    .kana-heading {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 12px;
+      margin-bottom: 22px;
+    }
+    .kana-heading-char {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px;
+      font-weight: 400;
+      color: var(--gold-dark);
+      letter-spacing: 0.15em;
+      line-height: 1;
+    }
+    .kana-heading-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      font-weight: 300;
+      letter-spacing: 0.35em;
+      color: var(--gray-light);
+      text-transform: uppercase;
+    }
+
+    /* Grid */
+    .store-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 14px;
+    }
+
+    /* Card */
+    .store-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      padding: 22px 26px 22px 28px;
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .store-card::after {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: linear-gradient(180deg, var(--gold-light), var(--gold-dark));
+      transform: scaleY(0);
+      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
+      transform-origin: bottom;
+    }
+    .store-card:hover {
+      box-shadow: 0 8px 32px rgba(26,22,20,0.1);
+      transform: translateY(-2px);
+      border-color: rgba(201,169,110,0.55);
+    }
+    .store-card:hover::after { transform: scaleY(1); }
+
+    .card-body { flex: 1; min-width: 0; }
+    .card-pref {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px;
+      letter-spacing: 0.4em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+    .card-name {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--dark);
+      letter-spacing: 0.04em;
+      margin-bottom: 3px;
+      line-height: 1.5;
+    }
+    .card-yomi {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 10px;
+      font-weight: 200;
+      color: var(--gray);
+      letter-spacing: 0.1em;
+    }
+    .card-arrow {
+      flex-shrink: 0;
+      color: var(--gold-light);
+      font-size: 14px;
+      transition: all 0.3s;
+      line-height: 1;
+    }
+    .store-card:hover .card-arrow {
+      color: var(--gold);
+      transform: translateX(3px);
+    }
+
+    /* No results */
+    .no-results {
+      text-align: center;
+      padding: 72px 20px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px;
+      color: var(--gray);
+      letter-spacing: 0.15em;
+    }
+
+    /* ─── MODAL ──────────────────────────────── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(20,16,14,0.82);
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.35s, visibility 0.35s;
+      backdrop-filter: blur(4px);
+    }
+    .modal-overlay.open { opacity: 1; visibility: visible; }
+
+    .modal {
+      background: var(--white);
+      max-width: 520px;
+      width: 100%;
+      padding: 52px 48px;
+      position: relative;
+      transform: translateY(18px) scale(0.97);
+      transition: transform 0.38s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .modal-overlay.open .modal { transform: translateY(0) scale(1); }
+
+    .modal-close {
+      position: absolute;
+      top: 18px; right: 20px;
+      background: none; border: none;
+      cursor: pointer;
+      color: var(--gray-light);
+      font-size: 18px;
+      line-height: 1;
+      padding: 6px;
+      transition: color 0.25s;
+    }
+    .modal-close:hover { color: var(--dark); }
+
+    .modal-badge {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px;
+      letter-spacing: 0.5em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .modal-name {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 20px;
+      font-weight: 400;
+      color: var(--dark);
+      letter-spacing: 0.06em;
+      line-height: 1.55;
+      margin-bottom: 6px;
+    }
+    .modal-yomi {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 11px;
+      font-weight: 200;
+      color: var(--gray);
+      letter-spacing: 0.12em;
+      margin-bottom: 28px;
+    }
+    .modal-rule {
+      width: 36px; height: 1px;
+      background: var(--gold);
+      margin-bottom: 28px;
+    }
+    .modal-dl {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 34px;
+    }
+    .modal-dl li {
+      display: flex;
+      gap: 18px;
+      align-items: flex-start;
+    }
+    .dl-label {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 10px;
+      letter-spacing: 0.32em;
+      color: var(--gold-dark);
+      text-transform: uppercase;
+      min-width: 58px;
+      padding-top: 3px;
+      line-height: 1.4;
+    }
+    .dl-value {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--dark-mid);
+      letter-spacing: 0.05em;
+      line-height: 1.75;
+    }
+    .dl-value a { color: inherit; text-decoration: none; }
+    .dl-value a:hover { color: var(--gold-dark); }
+
+    .modal-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      letter-spacing: 0.3em;
+      color: var(--gold-dark);
+      text-decoration: none;
+      border: 1px solid var(--gold);
+      padding: 13px 26px;
+      transition: all 0.3s;
+      text-transform: uppercase;
+    }
+    .modal-cta:hover {
+      background: var(--dark);
+      border-color: var(--dark);
+      color: var(--gold-light);
+    }
+    .modal-cta svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+    /* ─── FOOTER ─────────────────────────────── */
+    footer {
+      background: var(--dark);
+      padding: 52px 40px;
+      text-align: center;
+      border-top: 1px solid rgba(201,169,110,0.15);
+    }
+    .footer-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 300;
+      font-style: italic;
+      color: var(--gold);
+      letter-spacing: 0.22em;
+      margin-bottom: 10px;
+    }
+    .footer-tagline {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.35em;
+      color: rgba(255,255,255,0.22);
+      text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+    .footer-rule {
+      width: 30px; height: 1px;
+      background: rgba(201,169,110,0.35);
+      margin: 0 auto 24px;
+    }
+    .footer-copy {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      color: rgba(255,255,255,0.22);
+      letter-spacing: 0.15em;
+    }
+
+    /* ─── RESPONSIVE ─────────────────────────── */
+    @media (max-width: 768px) {
+      .header-inner { padding: 0 20px; }
+      nav { display: none; }
+      .page-hero { padding: 64px 20px 56px; }
+      .section { padding: 52px 20px; }
+      #map { height: 340px; }
+      .store-grid { grid-template-columns: 1fr; }
+      .modal { padding: 40px 24px; }
+      footer { padding: 44px 20px; }
+      .filter-label-text { width: 100%; text-align: center; margin-right: 0; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══ HEADER ═══ -->
+<header>
+  <div class="header-inner">
+    <a href="#" class="logo">LAÉSSE</a>
+    <nav>
+      <a href="#">Brand</a>
+      <a href="#">Products</a>
+      <a href="#" class="active">Stores</a>
+      <a href="#">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ═══ PAGE HERO ═══ -->
+<section class="page-hero">
+  <p class="hero-label">Authorized Retailers</p>
+  <h1>取扱店<em>一覧</em></h1>
+  <p class="hero-sub">LAÉSSE 正規取扱店のご案内</p>
+  <div class="gold-rule"></div>
+</section>
+
+<!-- ═══ MAP SECTION ═══ -->
+<section class="section map-section">
+  <div class="container">
+    <div class="section-head">
+      <p class="section-label">Location Map</p>
+      <h2 class="section-title">全国店舗<em>マップ</em></h2>
+    </div>
+    <div class="map-wrap">
+      <div id="map"></div>
+      <div class="map-placeholder" id="mapPlaceholder">
+        <div class="map-placeholder-icon">&#x1F5FA;</div>
+        <p>マップを読み込んでいます…</p>
+      </div>
+    </div>
+    <p class="map-api-note">
+      ※ ご利用には Google Maps JavaScript API キーが必要です。<br>
+      スクリプトタグ内の <code>YOUR_API_KEY</code> を実際の API キーに置き換えてください。
+    </p>
+  </div>
+</section>
+
+<!-- ═══ STORES SECTION ═══ -->
+<section class="section stores-section">
+  <div class="container">
+    <div class="section-head">
+      <p class="section-label">Store List</p>
+      <h2 class="section-title">取扱店<em>一覧</em></h2>
+    </div>
+
+    <div class="filter-wrap" id="filterWrap">
+      <span class="filter-label-text">Filter</span>
+    </div>
+
+    <p class="store-count" id="storeCount"></p>
+    <div id="storeList"></div>
+  </div>
+</section>
+
+<!-- ═══ MODAL ═══ -->
+<div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalName">
+  <div class="modal" id="modal">
+    <button class="modal-close" id="modalClose" aria-label="閉じる">&#x2715;</button>
+    <p class="modal-badge">Store Detail</p>
+    <h3 class="modal-name" id="modalName"></h3>
+    <p class="modal-yomi" id="modalYomi"></p>
+    <div class="modal-rule"></div>
+    <ul class="modal-dl" id="modalDl"></ul>
+    <a href="#" class="modal-cta" id="modalMapLink" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/>
+      </svg>
+      Google マップで見る
+    </a>
+  </div>
+</div>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <p class="footer-logo">LAÉSSE</p>
+  <p class="footer-tagline">Stem Cell Beauty</p>
+  <div class="footer-rule"></div>
+  <p class="footer-copy">&copy; 2024 LAÉSSE. All Rights Reserved.</p>
+</footer>
+
+<!-- ═══════════════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════════════ -->
+<script>
+// ─── Store data ────────────────────────────────────────────────────────────
+const stores = [
+  {
+    name: 'アロマサロン フルール',
+    yomi: 'あろまさろん ふるーる',
+    prefecture: '北海道',
+    address: '北海道札幌市中央区大通西3-1-1',
+    tel: '011-111-1111',
+    mapUrl: 'https://maps.app.goo.gl/dummy1',
+    lat: 43.0621, lng: 141.3544
+  },
+  {
+    name: 'ビューティサロン ソレイユ',
+    yomi: 'びゅーてぃさろん それいゆ',
+    prefecture: '宮城県',
+    address: '宮城県仙台市青葉区一番町2-3-4',
+    tel: '022-222-2222',
+    mapUrl: 'https://maps.app.goo.gl/dummy2',
+    lat: 38.2682, lng: 140.8694
+  },
+  {
+    name: 'エステティック ルミエール',
+    yomi: 'えすてていっく るみえーる',
+    prefecture: '東京都',
+    address: '東京都渋谷区神南1-2-3',
+    tel: '03-3333-3333',
+    mapUrl: 'https://maps.app.goo.gl/dummy3',
+    lat: 35.6584, lng: 139.7022
+  },
+  {
+    name: 'ネイルサロン ブラン',
+    yomi: 'ねいるさろん ぶらん',
+    prefecture: '東京都',
+    address: '東京都新宿区新宿3-4-5',
+    tel: '03-4444-4444',
+    mapUrl: 'https://maps.app.goo.gl/dummy4',
+    lat: 35.6938, lng: 139.7035
+  },
+  {
+    name: 'スキンケアサロン オーロラ',
+    yomi: 'すきんけあさろん おーろら',
+    prefecture: '神奈川県',
+    address: '神奈川県横浜市中区山下町6-7-8',
+    tel: '045-555-5555',
+    mapUrl: 'https://maps.app.goo.gl/dummy5',
+    lat: 35.4437, lng: 139.6503
+  },
+  {
+    name: 'ビューティクリニック ヴィーナス',
+    yomi: 'びゅーてぃくりにっく ゔぃーなす',
+    prefecture: '愛知県',
+    address: '愛知県名古屋市中区栄4-5-6',
+    tel: '052-666-6666',
+    mapUrl: 'https://maps.app.goo.gl/dummy6',
+    lat: 35.1710, lng: 136.9084
+  },
+  {
+    name: 'エステサロン ローズ',
+    yomi: 'えすてさろん ろーず',
+    prefecture: '京都府',
+    address: '京都府京都市中京区四条通烏丸東入7-8',
+    tel: '075-777-7777',
+    mapUrl: 'https://maps.app.goo.gl/dummy7',
+    lat: 35.0040, lng: 135.7587
+  },
+  {
+    name: 'ネイル＆エステ シャルム',
+    yomi: 'ねいるあんどえすて しゃるむ',
+    prefecture: '大阪府',
+    address: '大阪府大阪市北区梅田1-2-3',
+    tel: '06-8888-8888',
+    mapUrl: 'https://maps.app.goo.gl/dummy8',
+    lat: 34.7024, lng: 135.4960
+  },
+  {
+    name: 'トータルビューティ ベル',
+    yomi: 'とーたるびゅーてぃ べる',
+    prefecture: '兵庫県',
+    address: '兵庫県神戸市中央区三宮町2-3-4',
+    tel: '078-999-9999',
+    mapUrl: 'https://maps.app.goo.gl/dummy9',
+    lat: 34.6901, lng: 135.1956
+  },
+  {
+    name: 'アンチエイジングサロン グレース',
+    yomi: 'あんちえいじんぐさろん ぐれーす',
+    prefecture: '福岡県',
+    address: '福岡県福岡市中央区天神3-4-5',
+    tel: '092-000-0000',
+    mapUrl: 'https://maps.app.goo.gl/dummy10',
+    lat: 33.5902, lng: 130.3990
+  }
+];
+
+// あいうえお順にソート
+stores.sort((a, b) => a.yomi.localeCompare(b.yomi, 'ja'));
+
+// ─── Kana row classification ──────────────────────────────────────────────
+const KANA_ROWS = [
+  { label: 'ア行', en: 'A',  chars: 'あいうえおぁぃぅぇぉ' },
+  { label: 'カ行', en: 'KA', chars: 'かきくけこがぎぐげご' },
+  { label: 'サ行', en: 'SA', chars: 'さしすせそざじずぜぞ' },
+  { label: 'タ行', en: 'TA', chars: 'たちつてとだぢづでど' },
+  { label: 'ナ行', en: 'NA', chars: 'なにぬねの' },
+  { label: 'ハ行', en: 'HA', chars: 'はひふへほばびぶべぼぱぴぷぺぽ' },
+  { label: 'マ行', en: 'MA', chars: 'まみむめも' },
+  { label: 'ヤ行', en: 'YA', chars: 'やゆよゃゅょ' },
+  { label: 'ラ行', en: 'RA', chars: 'らりるれろ' },
+  { label: 'ワ行', en: 'WA', chars: 'わをんゐゑ' },
+];
+const ROW_ORDER = KANA_ROWS.map(r => r.label);
+
+function getKanaRow(yomi) {
+  const first = yomi.charAt(0);
+  for (const row of KANA_ROWS) {
+    if (row.chars.includes(first)) return row;
+  }
+  return { label: 'その他', en: 'OTHER' };
+}
+
+// ─── Filter state ─────────────────────────────────────────────────────────
+const prefectures = ['全て', ...new Set(stores.map(s => s.prefecture))];
+let activeFilter = '全て';
+
+// ─── Render filters ───────────────────────────────────────────────────────
+function renderFilters() {
+  const wrap = document.getElementById('filterWrap');
+  const label = wrap.querySelector('.filter-label-text');
+  wrap.innerHTML = '';
+  wrap.appendChild(label);
+
+  prefectures.forEach(pref => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn' + (pref === activeFilter ? ' active' : '');
+    btn.textContent = pref;
+    btn.addEventListener('click', () => {
+      activeFilter = pref;
+      renderFilters();
+      renderStores();
+    });
+    wrap.appendChild(btn);
+  });
+}
+
+// ─── Render store list ────────────────────────────────────────────────────
+function renderStores() {
+  const filtered = activeFilter === '全て'
+    ? stores
+    : stores.filter(s => s.prefecture === activeFilter);
+
+  const countEl = document.getElementById('storeCount');
+  countEl.innerHTML = `<strong>${filtered.length}</strong> 店舗`;
+
+  const listEl = document.getElementById('storeList');
+  listEl.innerHTML = '';
+
+  if (filtered.length === 0) {
+    listEl.innerHTML = '<p class="no-results">該当する店舗が見つかりませんでした。</p>';
+    return;
+  }
+
+  // Group by kana row
+  const groups = new Map();
+  filtered.forEach(store => {
+    const row = getKanaRow(store.yomi);
+    if (!groups.has(row.label)) groups.set(row.label, { ...row, items: [] });
+    groups.get(row.label).items.push(store);
+  });
+
+  // Render in standard あいうえお order
+  const allLabels = [...ROW_ORDER, 'その他'];
+  allLabels.forEach(label => {
+    if (!groups.has(label)) return;
+    const { en, items } = groups.get(label);
+
+    const groupEl = document.createElement('div');
+    groupEl.className = 'kana-group';
+
+    const heading = document.createElement('div');
+    heading.className = 'kana-heading';
+    heading.innerHTML = `
+      <span class="kana-heading-char">${label}</span>
+      <span class="kana-heading-en">${en}</span>
+    `;
+    groupEl.appendChild(heading);
+
+    const grid = document.createElement('div');
+    grid.className = 'store-grid';
+
+    items.forEach(store => {
+      const card = document.createElement('div');
+      card.className = 'store-card';
+      card.setAttribute('role', 'button');
+      card.setAttribute('tabindex', '0');
+      card.innerHTML = `
+        <div class="card-body">
+          <p class="card-pref">${store.prefecture}</p>
+          <p class="card-name">${store.name}</p>
+          <p class="card-yomi">${store.yomi}</p>
+        </div>
+        <span class="card-arrow">&#x2192;</span>
+      `;
+      card.addEventListener('click', () => openModal(store));
+      card.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(store); }
+      });
+      grid.appendChild(card);
+    });
+
+    groupEl.appendChild(grid);
+    listEl.appendChild(groupEl);
+  });
+}
+
+// ─── Modal ────────────────────────────────────────────────────────────────
+function openModal(store) {
+  document.getElementById('modalName').textContent = store.name;
+  document.getElementById('modalYomi').textContent = store.yomi;
+  document.getElementById('modalDl').innerHTML = `
+    <li>
+      <span class="dl-label">都道府県</span>
+      <span class="dl-value">${store.prefecture}</span>
+    </li>
+    <li>
+      <span class="dl-label">住所</span>
+      <span class="dl-value">${store.address}</span>
+    </li>
+    <li>
+      <span class="dl-label">電話</span>
+      <span class="dl-value"><a href="tel:${store.tel}">${store.tel}</a></span>
+    </li>
+  `;
+  document.getElementById('modalMapLink').href = store.mapUrl;
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('modalClose').addEventListener('click', closeModal);
+document.getElementById('modalOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+
+// ─── Init ─────────────────────────────────────────────────────────────────
+renderFilters();
+renderStores();
+
+// ─── Google Maps ──────────────────────────────────────────────────────────
+window.initMap = function () {
+  // Dismiss placeholder
+  const ph = document.getElementById('mapPlaceholder');
+  if (ph) ph.classList.add('hidden');
+
+  const mapStyles = [
+    { elementType: 'geometry',             stylers: [{ color: '#f3ede2' }] },
+    { elementType: 'labels.text.fill',     stylers: [{ color: '#4a4540' }] },
+    { elementType: 'labels.text.stroke',   stylers: [{ color: '#f3ede2' }] },
+    { featureType: 'administrative',       elementType: 'geometry.stroke', stylers: [{ color: '#c9a96e' }] },
+    { featureType: 'landscape.natural',    elementType: 'geometry',        stylers: [{ color: '#e8e0d0' }] },
+    { featureType: 'poi',                  elementType: 'geometry',        stylers: [{ color: '#e2dbd0' }] },
+    { featureType: 'poi',                  elementType: 'labels.text.fill',stylers: [{ color: '#93887b' }] },
+    { featureType: 'poi.park',             elementType: 'geometry.fill',   stylers: [{ color: '#d0dfc0' }] },
+    { featureType: 'road',                 elementType: 'geometry',        stylers: [{ color: '#ffffff' }] },
+    { featureType: 'road.arterial',        elementType: 'labels.text.fill',stylers: [{ color: '#786b5d' }] },
+    { featureType: 'road.highway',         elementType: 'geometry',        stylers: [{ color: '#e8d5aa' }] },
+    { featureType: 'road.highway',         elementType: 'labels.text.fill',stylers: [{ color: '#5a4e42' }] },
+    { featureType: 'road.local',           elementType: 'labels.text.fill',stylers: [{ color: '#9e8e80' }] },
+    { featureType: 'transit.line',         elementType: 'geometry',        stylers: [{ color: '#ddd0ba' }] },
+    { featureType: 'transit.station',      elementType: 'geometry',        stylers: [{ color: '#e8ddd0' }] },
+    { featureType: 'water',                elementType: 'geometry.fill',   stylers: [{ color: '#b8cfe0' }] },
+    { featureType: 'water',                elementType: 'labels.text.fill',stylers: [{ color: '#7a9ab8' }] },
+  ];
+
+  const map = new google.maps.Map(document.getElementById('map'), {
+    center: { lat: 36.5, lng: 136.8 },
+    zoom: 5,
+    styles: mapStyles,
+    mapTypeControl: false,
+    streetViewControl: false,
+    fullscreenControl: true,
+    zoomControl: true,
+    zoomControlOptions: { position: google.maps.ControlPosition.RIGHT_CENTER },
+    fullscreenControlOptions: { position: google.maps.ControlPosition.RIGHT_TOP },
+  });
+
+  const infoWindow = new google.maps.InfoWindow({
+    pixelOffset: new google.maps.Size(0, -4),
+  });
+
+  // Custom gold pin marker (SVG)
+  const markerSvg = [
+    '<svg xmlns="http://www.w3.org/2000/svg" width="32" height="42" viewBox="0 0 32 42">',
+    '  <defs>',
+    '    <radialGradient id="g" cx="40%" cy="35%" r="60%">',
+    '      <stop offset="0%" stop-color="#E8D5AA"/>',
+    '      <stop offset="100%" stop-color="#9E7B3C"/>',
+    '    </radialGradient>',
+    '  </defs>',
+    '  <path d="M16 0C7.16 0 0 7.16 0 16c0 9.6 16 26 16 26S32 25.6 32 16C32 7.16 24.84 0 16 0z"',
+    '        fill="url(#g)" stroke="#7A5C2A" stroke-width="1"/>',
+    '  <circle cx="16" cy="16" r="5" fill="#1A1614" opacity="0.85"/>',
+    '</svg>'
+  ].join('');
+
+  const markerUrl = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(markerSvg);
+
+  stores.forEach(store => {
+    const marker = new google.maps.Marker({
+      position: { lat: store.lat, lng: store.lng },
+      map,
+      title: store.name,
+      icon: {
+        url: markerUrl,
+        scaledSize: new google.maps.Size(32, 42),
+        anchor: new google.maps.Point(16, 42),
+      },
+      animation: google.maps.Animation.DROP,
+    });
+
+    marker.addListener('click', () => {
+      infoWindow.setContent(
+        '<div style="' +
+          'font-family:\'Noto Serif JP\',serif;' +
+          'padding:10px 14px 8px;' +
+          'min-width:190px;' +
+          'max-width:240px;' +
+        '">' +
+          '<p style="' +
+            'font-size:13px;font-weight:500;' +
+            'color:#1A1614;' +
+            'letter-spacing:0.04em;' +
+            'margin-bottom:6px;' +
+            'line-height:1.5;' +
+          '">' + store.name + '</p>' +
+          '<p style="' +
+            'font-size:11px;font-weight:300;' +
+            'color:#6B6560;' +
+            'letter-spacing:0.04em;' +
+            'line-height:1.7;' +
+            'margin-bottom:4px;' +
+          '">' + store.address + '</p>' +
+          '<p style="font-size:11px;color:#9E7B3C;letter-spacing:0.05em;">' + store.tel + '</p>' +
+        '</div>'
+      );
+      infoWindow.open(map, marker);
+    });
+  });
+};
+</script>
+
+<!-- Google Maps JavaScript API  ※ YOUR_API_KEY を実際のキーに置き換えてください -->
+<script async
+  src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap&language=ja&region=JP">
+</script>
+
+</body>
+</html>
