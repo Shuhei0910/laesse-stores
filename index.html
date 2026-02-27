@@ -64,23 +64,11 @@
       width: auto;
       object-fit: contain;
     }
-    nav { display: flex; gap: 30px; }
-    nav a {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 12px;
-      font-weight: 400;
-      letter-spacing: 0.22em;
-      color: #555;
-      text-decoration: none;
-      text-transform: uppercase;
-      transition: color 0.3s;
-    }
-    nav a:hover, nav a.active { color: var(--gold); }
 
     /* ─── PAGE HERO ──────────────────────────── */
     .page-hero {
       background: var(--dark);
-      padding: 90px 40px 80px;
+      padding: 110px 40px 100px;
       text-align: center;
       position: relative;
       overflow: hidden;
@@ -88,7 +76,7 @@
     .page-hero::before {
       content: '';
       position: absolute; inset: 0;
-      background: url('images/main.jpg') center / cover no-repeat;
+      background: url('images/main.jpg') center 20% / cover no-repeat;
       pointer-events: none;
     }
     .page-hero::after {
@@ -442,13 +430,6 @@
       margin-bottom: 3px;
       line-height: 1.5;
     }
-    .card-yomi {
-      font-family: "游明朝", "Yu Mincho", "Hiragino Mincho ProN", serif;
-      font-size: 10px;
-      font-weight: 400;
-      color: var(--gray);
-      letter-spacing: 0.1em;
-    }
     .card-arrow {
       flex-shrink: 0;
       color: var(--gold-light);
@@ -531,14 +512,6 @@
       letter-spacing: 0.06em;
       line-height: 1.55;
       margin-bottom: 6px;
-    }
-    .modal-yomi {
-      font-family: "游明朝", "Yu Mincho", "Hiragino Mincho ProN", serif;
-      font-size: 11px;
-      font-weight: 400;
-      color: var(--gray);
-      letter-spacing: 0.12em;
-      margin-bottom: 28px;
     }
     .modal-rule {
       width: 36px; height: 1px;
@@ -716,8 +689,7 @@
     /* ─── RESPONSIVE ─────────────────────────── */
     @media (max-width: 768px) {
       .header-inner { padding: 0 20px; }
-      nav { display: none; }
-      .page-hero { padding: 64px 20px 56px; }
+      .page-hero { padding: 80px 20px 70px; }
       .section { padding: 52px 20px; }
       #map { height: 340px; }
       .store-grid { grid-template-columns: 1fr; }
@@ -735,13 +707,7 @@
 <!-- ═══ HEADER ═══ -->
 <header>
   <div class="header-inner">
-    <a href="#" class="logo"><img src="images/laesse_logo.png" alt="LAÉSSE"></a>
-    <nav>
-      <a href="#">Brand</a>
-      <a href="#">Products</a>
-      <a href="#" class="active">Stores</a>
-      <a href="#">Contact</a>
-    </nav>
+    <a href="https://laesse.info/" class="logo"><img src="images/laesse_logo.png" alt="LAÉSSE"></a>
   </div>
 </header>
 
@@ -1056,7 +1022,16 @@ function renderLegend() {
 
 // ─── Render Search UI ────────────────────────────────────────────────────
 function renderSearchUI() {
-  // Rank buttons
+  // Rank buttons with hierarchical selection
+  // Hierarchy: agency includes certified + expert; certified includes expert
+  // retailer is standalone
+  const RANK_HIERARCHY = {
+    expert:    ['expert'],
+    certified: ['certified', 'expert'],
+    agency:    ['agency', 'certified', 'expert'],
+    retailer:  ['retailer'],
+  };
+
   const rankWrap = document.getElementById('filterRank');
   rankWrap.innerHTML = '';
   Object.entries(RANK_CONFIG).forEach(([key, cfg]) => {
@@ -1065,11 +1040,42 @@ function renderSearchUI() {
     btn.textContent = cfg.label;
     btn.dataset.value = key;
     btn.addEventListener('click', () => {
-      btn.classList.toggle('active');
-      updateSelectedFromButtons('filterRank', selectedRanks);
+      // Toggle this rank's primary selection
+      if (btn.dataset.primary === 'true') {
+        btn.dataset.primary = '';
+      } else {
+        btn.dataset.primary = 'true';
+      }
+      // Recalculate visual state for all rank buttons
+      updateRankVisuals();
     });
     rankWrap.appendChild(btn);
   });
+
+  function updateRankVisuals() {
+    const btns = rankWrap.querySelectorAll('.checkbox-btn');
+    // Collect primarily selected ranks
+    const primarySelected = [];
+    btns.forEach(b => { if (b.dataset.primary === 'true') primarySelected.push(b.dataset.value); });
+
+    // Compute the full set of included ranks
+    const includedRanks = new Set();
+    primarySelected.forEach(r => {
+      (RANK_HIERARCHY[r] || [r]).forEach(rr => includedRanks.add(rr));
+    });
+
+    // Update visual active state
+    btns.forEach(b => {
+      if (includedRanks.has(b.dataset.value)) {
+        b.classList.add('active');
+      } else {
+        b.classList.remove('active');
+      }
+    });
+
+    // Update selectedRanks to the expanded set
+    selectedRanks = [...includedRanks];
+  }
 
   // Product buttons
   const prodWrap = document.getElementById('filterProducts');
@@ -1143,8 +1149,7 @@ function updateSelectedAreas() {
 function getFilteredStores() {
   const keyword = document.getElementById('searchKeyword').value.trim().toLowerCase();
 
-  // Collect current selections
-  updateSelectedFromButtons('filterRank', selectedRanks);
+  // Collect current selections (rank is managed by updateRankVisuals)
   updateSelectedFromButtons('filterProducts', selectedProducts);
   updateSelectedAreas();
 
@@ -1240,7 +1245,6 @@ function renderStores() {
           <span class="card-badge" style="background:${rankCfg.bg};color:${rankCfg.color}">${rankCfg.label}</span>
           <p class="card-pref">${store.prefecture}</p>
           <p class="card-name">${store.name}</p>
-          <p class="card-yomi">${store.yomi}</p>
         </div>
         <span class="card-arrow">&#x2192;</span>
       `;
@@ -1269,7 +1273,6 @@ function openModal(store) {
 
   // Name & yomi
   html += `<h3 class="modal-name" id="modalName">${store.name}</h3>`;
-  html += `<p class="modal-yomi">${store.yomi}</p>`;
   html += `<div class="modal-rule"></div>`;
 
   // Detail list
