@@ -67,11 +67,11 @@
 
     /* ─── PAGE HERO ──────────────────────────── */
     .page-hero {
-      background: url('images/main_v2.png') center center / cover no-repeat;
-      background-color: var(--dark);
-      padding: 110px 40px 100px;
-      text-align: center;
       position: relative;
+      width: 100%;
+      padding-top: 31.25%; /* 600/1920 aspect ratio */
+      background: url('images/main_v2.png') center / cover no-repeat;
+      background-color: var(--dark);
       overflow: hidden;
     }
     .page-hero::before {
@@ -79,10 +79,19 @@
       position: absolute; inset: 0;
       background: rgba(57,58,58,0.6);
       pointer-events: none;
-    }
-    .page-hero > * {
-      position: relative;
       z-index: 1;
+    }
+    .hero-content {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px 40px;
+      z-index: 2;
     }
     .hero-watermark {
       position: absolute;
@@ -96,7 +105,7 @@
       letter-spacing: 0.25em;
       white-space: nowrap;
       pointer-events: none;
-      z-index: 1;
+      z-index: 2;
     }
     .hero-label {
       font-family: 'Cormorant Garamond', serif;
@@ -701,7 +710,8 @@
     /* ─── RESPONSIVE ─────────────────────────── */
     @media (max-width: 768px) {
       .header-inner { padding: 0 20px; }
-      .page-hero { padding: 80px 20px 70px; background-position: center center; }
+      .page-hero { min-height: 200px; }
+      .hero-content { padding: 20px; }
       .section { padding: 52px 20px; }
       #map { height: 340px; }
       .store-grid { grid-template-columns: 1fr; }
@@ -726,10 +736,12 @@
 <!-- ═══ PAGE HERO ═══ -->
 <section class="page-hero">
   <span class="hero-watermark">STORES</span>
-  <p class="hero-label">Authorized Retailers</p>
-  <h1>取扱店<em>一覧</em></h1>
-  <p class="hero-sub">LAÉSSE 正規取扱店のご案内</p>
-  <div class="gold-rule"></div>
+  <div class="hero-content">
+    <p class="hero-label">Authorized Retailers</p>
+    <h1>取扱店<em>一覧</em></h1>
+    <p class="hero-sub">LAÉSSE 正規取扱店のご案内</p>
+    <div class="gold-rule"></div>
+  </div>
 </section>
 
 <!-- ═══ MAP SECTION ═══ -->
