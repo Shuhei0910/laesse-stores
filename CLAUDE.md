@@ -4,6 +4,13 @@
 LAÉSSE（化粧品メーカー）の取扱店一覧を表示するランディングページ。
 代理店・認定代理店・エキスパート代理店・非代理店（取扱店）の各店舗情報を掲載し、紹介URLを通じて購入導線を提供する。
 
+## Notion プロジェクトページ
+- URL: https://www.notion.so/31eaa962599881bb8825e60af85275fd
+- 「Notion更新して」と言われたらこのページの進捗ログを更新すること
+
+## GitHub
+- リポジトリ: https://github.com/Shuhei0910/laesse-stores.git
+
 ## 技術スタック
 - HTML / CSS / JavaScript（バニラ、フレームワークなし）
 - 単一ファイル構成（`index.html`）
