@@ -495,6 +495,62 @@
       transform: translateX(3px);
     }
 
+    /* Prefecture groups */
+    .pref-group { margin-bottom: 48px; }
+    .pref-heading {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+    .pref-heading-name {
+      font-family: "游明朝", "Yu Mincho", "Hiragino Mincho ProN", serif;
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--gold-dark);
+      letter-spacing: 0.15em;
+    }
+    .pref-heading-count {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 11px;
+      letter-spacing: 0.3em;
+      color: var(--gray-light);
+    }
+
+    /* Pagination */
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin: 48px 0 24px;
+    }
+    .pagination-btn {
+      font-family: "游明朝", "Yu Mincho", "Hiragino Mincho ProN", serif;
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      padding: 8px 22px;
+      border: 1px solid var(--border);
+      background: var(--white);
+      color: var(--gold-dark);
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+    .pagination-btn:hover:not(:disabled) {
+      background: var(--cream);
+      border-color: var(--gold);
+    }
+    .pagination-btn:disabled { opacity: 0.35; cursor: default; }
+    .pagination-info {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      letter-spacing: 0.2em;
+      color: var(--gray);
+      padding: 0 12px;
+    }
+
     /* No results */
     .no-results {
       text-align: center;
@@ -1034,6 +1090,7 @@
 
     <p class="store-count" id="storeCount"></p>
     <div id="storeList"></div>
+    <div id="pagination" class="pagination"></div>
   </div>
 </section>
 
@@ -14541,6 +14598,8 @@ let selectedRanks = [];
 let selectedProducts = [];
 let selectedArea = null;
 let selectedPrefectures = [];
+let currentPage = 1;
+const STORES_PER_PAGE = 30;
 
 // Product → rank constraint
 const PRODUCT_RANK_CONSTRAINT = {
@@ -14680,7 +14739,7 @@ function renderSearchUI() {
         prefWrap.querySelectorAll('.checkbox-btn.active').forEach(b => {
           if (b.dataset.value) selectedPrefectures.push(b.dataset.value);
         });
-        renderStores();
+        resetAndRender();
       });
       prefWrap.appendChild(btn);
     });
@@ -14697,7 +14756,7 @@ function renderSearchUI() {
     selectedPrefectures = [];
     prefWrap.innerHTML = '';
     prefWrap.style.display = 'none';
-    renderStores();
+    resetAndRender();
   });
   areaWrap.appendChild(allBtn);
 
@@ -14713,7 +14772,7 @@ function renderSearchUI() {
       selectedArea = area;
       selectedPrefectures = [];
       buildPrefButtons(area);
-      renderStores();
+      resetAndRender();
     });
     areaWrap.appendChild(btn);
   });
@@ -14737,6 +14796,18 @@ const PREF_TO_AREA = {
   '徳島県':'四国','香川県':'四国','愛媛県':'四国','高知県':'四国',
   '福岡県':'九州・沖縄','佐賀県':'九州・沖縄','長崎県':'九州・沖縄','熊本県':'九州・沖縄','大分県':'九州・沖縄','宮崎県':'九州・沖縄','鹿児島県':'九州・沖縄','沖縄県':'九州・沖縄',
 };
+
+// ─── Prefecture geographic order ─────────────────────────────────────────
+const PREF_ORDER = [
+  '北海道',
+  '青森県','岩手県','宮城県','秋田県','山形県','福島県',
+  '茨城県','栃木県','群馬県','埼玉県','千葉県','東京都','神奈川県',
+  '新潟県','富山県','石川県','福井県','山梨県','長野県','岐阜県','静岡県','愛知県','三重県',
+  '滋賀県','京都府','大阪府','兵庫県','奈良県','和歌山県',
+  '鳥取県','島根県','岡山県','広島県','山口県',
+  '徳島県','香川県','愛媛県','高知県',
+  '福岡県','佐賀県','長崎県','熊本県','大分県','宮崎県','鹿児島県','沖縄県',
+];
 
 // ─── Search / Filter logic ───────────────────────────────────────────────
 function getFilteredStores() {
@@ -14790,40 +14861,48 @@ function getFilteredStores() {
 // ─── Render store list ────────────────────────────────────────────────────
 function renderStores() {
   const filtered = getFilteredStores();
+  const total = filtered.length;
+  const totalPages = Math.max(1, Math.ceil(total / STORES_PER_PAGE));
+  if (currentPage > totalPages) currentPage = totalPages;
 
   const countEl = document.getElementById('storeCount');
-  countEl.innerHTML = `<strong>${filtered.length}</strong> 店舗`;
+  countEl.innerHTML = `<strong>${total}</strong> 店舗`;
 
   const listEl = document.getElementById('storeList');
   listEl.innerHTML = '';
 
-  if (filtered.length === 0) {
+  if (total === 0) {
     listEl.innerHTML = '<p class="no-results">該当する店舗が見つかりませんでした。</p>';
+    renderPagination(0);
     return;
   }
 
-  // Group by kana row
-  const groups = new Map();
-  filtered.forEach(store => {
-    const row = getKanaRow(store.yomi);
-    if (!groups.has(row.label)) groups.set(row.label, { ...row, items: [] });
-    groups.get(row.label).items.push(store);
+  // Slice by current page
+  const start = (currentPage - 1) * STORES_PER_PAGE;
+  const pageStores = filtered.slice(start, start + STORES_PER_PAGE);
+
+  // Group by prefecture in geographic order
+  const prefMap = new Map();
+  pageStores.forEach(store => {
+    if (!prefMap.has(store.prefecture)) prefMap.set(store.prefecture, []);
+    prefMap.get(store.prefecture).push(store);
+  });
+  const sortedPrefs = [...prefMap.keys()].sort((a, b) => {
+    const ai = PREF_ORDER.indexOf(a);
+    const bi = PREF_ORDER.indexOf(b);
+    return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
   });
 
-  // Render in standard あいうえお order
-  const allLabels = [...ROW_ORDER, 'その他'];
-  allLabels.forEach(label => {
-    if (!groups.has(label)) return;
-    const { en, items } = groups.get(label);
-
+  sortedPrefs.forEach(pref => {
+    const items = prefMap.get(pref);
     const groupEl = document.createElement('div');
-    groupEl.className = 'kana-group';
+    groupEl.className = 'pref-group';
 
     const heading = document.createElement('div');
-    heading.className = 'kana-heading';
+    heading.className = 'pref-heading';
     heading.innerHTML = `
-      <span class="kana-heading-char">${label}</span>
-      <span class="kana-heading-en">${en}</span>
+      <span class="pref-heading-name">${pref}</span>
+      <span class="pref-heading-count">${items.length} stores</span>
     `;
     groupEl.appendChild(heading);
 
@@ -14854,6 +14933,47 @@ function renderStores() {
     groupEl.appendChild(grid);
     listEl.appendChild(groupEl);
   });
+
+  renderPagination(total);
+}
+
+function renderPagination(total) {
+  const el = document.getElementById('pagination');
+  el.innerHTML = '';
+  const totalPages = Math.ceil(total / STORES_PER_PAGE);
+  if (totalPages <= 1) return;
+
+  const prev = document.createElement('button');
+  prev.className = 'pagination-btn';
+  prev.textContent = '← 前へ';
+  prev.disabled = currentPage <= 1;
+  prev.addEventListener('click', () => {
+    currentPage--;
+    renderStores();
+    window.scrollTo({ top: document.getElementById('storeList').offsetTop - 120, behavior: 'smooth' });
+  });
+  el.appendChild(prev);
+
+  const info = document.createElement('span');
+  info.className = 'pagination-info';
+  info.textContent = `${currentPage} / ${totalPages}`;
+  el.appendChild(info);
+
+  const next = document.createElement('button');
+  next.className = 'pagination-btn';
+  next.textContent = '次へ →';
+  next.disabled = currentPage >= totalPages;
+  next.addEventListener('click', () => {
+    currentPage++;
+    renderStores();
+    window.scrollTo({ top: document.getElementById('storeList').offsetTop - 120, behavior: 'smooth' });
+  });
+  el.appendChild(next);
+}
+
+function resetAndRender() {
+  currentPage = 1;
+  renderStores();
 }
 
 // ─── Modal ────────────────────────────────────────────────────────────────
@@ -14960,9 +15080,9 @@ document.addEventListener('keydown', e => {
 });
 
 // ─── Search button ────────────────────────────────────────────────────────
-document.getElementById('searchBtn').addEventListener('click', renderStores);
+document.getElementById('searchBtn').addEventListener('click', resetAndRender);
 document.getElementById('searchKeyword').addEventListener('keydown', e => {
-  if (e.key === 'Enter') renderStores();
+  if (e.key === 'Enter') resetAndRender();
 });
 
 // ─── Clear button ─────────────────────────────────────────────────────────
@@ -14995,7 +15115,7 @@ document.getElementById('clearBtn').addEventListener('click', () => {
   prefWrap.style.display = 'none';
 
   // Re-render
-  renderStores();
+  resetAndRender();
 });
 
 // ─── Guide tabs ──────────────────────────────────────────────────────────
