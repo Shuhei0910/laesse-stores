@@ -994,25 +994,7 @@
 </section>
 
 <!-- ═══ MAP SECTION ═══ -->
-<section class="section map-section">
-  <div class="container">
-    <div class="section-head">
-      <p class="section-label">Location Map</p>
-      <h2 class="section-title">全国店舗<em>マップ</em></h2>
-    </div>
-    <div class="map-wrap">
-      <div id="map"></div>
-      <div class="map-placeholder" id="mapPlaceholder">
-        <div class="map-placeholder-icon">&#x1F5FA;</div>
-        <p>マップを読み込んでいます…</p>
-      </div>
-    </div>
-    <p class="map-api-note">
-      ※ ご利用には Google Maps JavaScript API キーが必要です。<br>
-      スクリプトタグ内の <code>YOUR_API_KEY</code> を実際の API キーに置き換えてください。
-    </p>
-  </div>
-</section>
+<!-- map-section: 非表示中（Google Maps API キー未設定）
 
 <!-- ═══ STORES SECTION ═══ -->
 <section class="section stores-section">
@@ -14931,12 +14913,7 @@ function openModal(store) {
     html += `</div>`;
   }
 
-  // Google Maps link
-  html += `<div style="margin-bottom:24px;">`;
-  html += `<a href="${store.mapUrl}" class="modal-cta" target="_blank" rel="noopener noreferrer">`;
-  html += `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>`;
-  html += `Google マップで見る</a>`;
-  html += `</div>`;
+  // Google Maps link（非表示中 - APIキー未設定）
 
   // External links (Instagram / HotPepper)
   if ((store.instagram && store.instagram !== '') || (store.hotpepper && store.hotpepper !== '')) {
