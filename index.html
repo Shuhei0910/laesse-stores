@@ -1042,6 +1042,7 @@
       <div class="search-group">
         <label class="search-group-label">Area</label>
         <div class="checkbox-group" id="filterArea"></div>
+        <div class="checkbox-group" id="filterPref" style="display:none;margin-top:8px;"></div>
       </div>
       <div class="search-actions">
         <button class="search-btn" id="searchBtn">Search</button><br>
@@ -1357,7 +1358,7 @@ const RANK_CONFIG = {
   expert:    { label: 'エキスパート代理店', bg: '#a27f44', color: '#fff8e8', group: 'agency' },
   certified: { label: '認定代理店',         bg: '#8a8a8a', color: '#ffffff', group: 'agency' },
   agency:    { label: '代理店',             bg: '#6b4c2a', color: '#f5e8d5', group: 'agency' },
-  retailer:  { label: '取次店',             bg: '#2d2d2d', color: '#e8e8e8', group: 'agency' },
+  retailer:  { label: '非代理店',            bg: '#2d2d2d', color: '#e8e8e8', group: 'agency' },
   prestige:  { label: 'プレステージサロン', bg: '#7b2d5f', color: '#f8e8f2', group: 'salon' },
   advance:   { label: 'アドバンスサロン',   bg: '#2d5f7b', color: '#e8f0f8', group: 'salon' },
   basic:     { label: 'ベーシックサロン',   bg: '#4a7b5f', color: '#e8f5ed', group: 'salon' },
@@ -14556,7 +14557,8 @@ function getKanaRow(yomi) {
 // ─── Filter state ─────────────────────────────────────────────────────────
 let selectedRanks = [];
 let selectedProducts = [];
-let selectedAreas = [];
+let selectedArea = null;
+let selectedPrefectures = [];
 
 // Product → rank constraint
 const PRODUCT_RANK_CONSTRAINT = {
@@ -14671,18 +14673,49 @@ function renderSearchUI() {
   const AREA_BLOCKS = ['北海道', '東北', '関東', '中部', '近畿', '中国', '四国', '九州・沖縄'];
 
   const areaWrap = document.getElementById('filterArea');
+  const prefWrap = document.getElementById('filterPref');
   areaWrap.innerHTML = '';
+  prefWrap.innerHTML = '';
+  prefWrap.style.display = 'none';
+
+  function buildPrefButtons(area) {
+    prefWrap.innerHTML = '';
+    const prefsInArea = [...new Set(stores.filter(s => s.area === area).map(s => s.prefecture))].sort();
+    if (prefsInArea.length <= 1) {
+      prefWrap.style.display = 'none';
+      return;
+    }
+    prefWrap.style.display = '';
+    prefsInArea.forEach(pref => {
+      const count = stores.filter(s => s.area === area && s.prefecture === pref).length;
+      const btn = document.createElement('button');
+      btn.className = 'checkbox-btn';
+      btn.textContent = pref + ' (' + count + ')';
+      btn.dataset.value = pref;
+      btn.addEventListener('click', () => {
+        btn.classList.toggle('active');
+        selectedPrefectures = [];
+        prefWrap.querySelectorAll('.checkbox-btn.active').forEach(b => {
+          if (b.dataset.value) selectedPrefectures.push(b.dataset.value);
+        });
+        renderStores();
+      });
+      prefWrap.appendChild(btn);
+    });
+  }
 
   // "全て" button
   const allBtn = document.createElement('button');
   allBtn.className = 'checkbox-btn active';
   allBtn.textContent = '全て';
   allBtn.addEventListener('click', () => {
-    areaWrap.querySelectorAll('.checkbox-btn').forEach(b => {
-      if (b !== allBtn) b.classList.remove('active');
-    });
+    areaWrap.querySelectorAll('.checkbox-btn').forEach(b => b.classList.remove('active'));
     allBtn.classList.add('active');
-    selectedAreas = [];
+    selectedArea = null;
+    selectedPrefectures = [];
+    prefWrap.innerHTML = '';
+    prefWrap.style.display = 'none';
+    renderStores();
   });
   areaWrap.appendChild(allBtn);
 
@@ -14693,12 +14726,12 @@ function renderSearchUI() {
     btn.textContent = area + ' (' + count + ')';
     btn.dataset.value = area;
     btn.addEventListener('click', () => {
-      btn.classList.toggle('active');
-      allBtn.classList.remove('active');
-      updateSelectedAreas();
-      if (selectedAreas.length === 0) {
-        allBtn.classList.add('active');
-      }
+      areaWrap.querySelectorAll('.checkbox-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      selectedArea = area;
+      selectedPrefectures = [];
+      buildPrefButtons(area);
+      renderStores();
     });
     areaWrap.appendChild(btn);
   });
@@ -14708,13 +14741,6 @@ function updateSelectedFromButtons(containerId, targetArray) {
   targetArray.length = 0;
   document.getElementById(containerId).querySelectorAll('.checkbox-btn.active').forEach(btn => {
     if (btn.dataset.value) targetArray.push(btn.dataset.value);
-  });
-}
-
-function updateSelectedAreas() {
-  selectedAreas = [];
-  document.getElementById('filterArea').querySelectorAll('.checkbox-btn.active').forEach(btn => {
-    if (btn.dataset.value) selectedAreas.push(btn.dataset.value);
   });
 }
 
@@ -14736,7 +14762,6 @@ function getFilteredStores() {
 
   // Collect current selections (rank is managed by updateRankVisuals)
   updateSelectedFromButtons('filterProducts', selectedProducts);
-  updateSelectedAreas();
 
   // Determine allowed ranks from product constraints
   let allowedRanksByProduct = null;
@@ -14770,7 +14795,11 @@ function getFilteredStores() {
     }
 
     // Area filter
-    if (selectedAreas.length > 0 && !selectedAreas.includes(store.area)) return false;
+    if (selectedPrefectures.length > 0) {
+      if (!selectedPrefectures.includes(store.prefecture)) return false;
+    } else if (selectedArea) {
+      if (store.area !== selectedArea) return false;
+    }
 
     return true;
   });
@@ -14979,13 +15008,14 @@ document.getElementById('clearBtn').addEventListener('click', () => {
 
   // Reset area to "全て"
   const areaWrap = document.getElementById('filterArea');
-  areaWrap.querySelectorAll('.checkbox-btn').forEach(btn => {
-    btn.classList.remove('active');
-  });
-  // Re-activate the first button ("全て")
-  const allBtn = areaWrap.querySelector('.checkbox-btn');
-  if (allBtn) allBtn.classList.add('active');
-  selectedAreas = [];
+  areaWrap.querySelectorAll('.checkbox-btn').forEach(btn => btn.classList.remove('active'));
+  const allAreaBtn = areaWrap.querySelector('.checkbox-btn');
+  if (allAreaBtn) allAreaBtn.classList.add('active');
+  selectedArea = null;
+  selectedPrefectures = [];
+  const prefWrap = document.getElementById('filterPref');
+  prefWrap.innerHTML = '';
+  prefWrap.style.display = 'none';
 
   // Re-render
   renderStores();
