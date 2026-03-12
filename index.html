@@ -14881,60 +14881,96 @@ function renderStores() {
   const start = (currentPage - 1) * STORES_PER_PAGE;
   const pageStores = filtered.slice(start, start + STORES_PER_PAGE);
 
-  // Group by prefecture in geographic order
-  const prefMap = new Map();
-  pageStores.forEach(store => {
-    if (!prefMap.has(store.prefecture)) prefMap.set(store.prefecture, []);
-    prefMap.get(store.prefecture).push(store);
-  });
-  const sortedPrefs = [...prefMap.keys()].sort((a, b) => {
-    const ai = PREF_ORDER.indexOf(a);
-    const bi = PREF_ORDER.indexOf(b);
-    return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
-  });
+  const useAreaGroup = selectedArea || selectedPrefectures.length > 0;
 
-  sortedPrefs.forEach(pref => {
-    const items = prefMap.get(pref);
-    const groupEl = document.createElement('div');
-    groupEl.className = 'pref-group';
-
-    const heading = document.createElement('div');
-    heading.className = 'pref-heading';
-    heading.innerHTML = `
-      <span class="pref-heading-name">${pref}</span>
-      <span class="pref-heading-count">${items.length} stores</span>
-    `;
-    groupEl.appendChild(heading);
-
-    const grid = document.createElement('div');
-    grid.className = 'store-grid';
-
-    items.forEach(store => {
-      const rankCfg = RANK_CONFIG[store.rank];
-      const card = document.createElement('div');
-      card.className = 'store-card';
-      card.setAttribute('role', 'button');
-      card.setAttribute('tabindex', '0');
-      card.innerHTML = `
-        <div class="card-body">
-          <span class="card-badge" style="background:${rankCfg.bg};color:${rankCfg.color}">${rankCfg.label}</span>
-          <p class="card-pref">${store.prefecture}</p>
-          <p class="card-name">${store.name}</p>
-        </div>
-        <span class="card-arrow">&#x2192;</span>
-      `;
-      card.addEventListener('click', () => openModal(store));
-      card.addEventListener('keydown', e => {
-        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(store); }
-      });
-      grid.appendChild(card);
+  if (useAreaGroup) {
+    // ── エリアフィルター適用時：都道府県グループ表示 ──
+    const prefMap = new Map();
+    pageStores.forEach(store => {
+      if (!prefMap.has(store.prefecture)) prefMap.set(store.prefecture, []);
+      prefMap.get(store.prefecture).push(store);
+    });
+    const sortedPrefs = [...prefMap.keys()].sort((a, b) => {
+      const ai = PREF_ORDER.indexOf(a);
+      const bi = PREF_ORDER.indexOf(b);
+      return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
     });
 
-    groupEl.appendChild(grid);
-    listEl.appendChild(groupEl);
-  });
+    sortedPrefs.forEach(pref => {
+      const items = prefMap.get(pref);
+      const groupEl = document.createElement('div');
+      groupEl.className = 'pref-group';
+
+      const heading = document.createElement('div');
+      heading.className = 'pref-heading';
+      heading.innerHTML = `
+        <span class="pref-heading-name">${pref}</span>
+        <span class="pref-heading-count">${items.length} stores</span>
+      `;
+      groupEl.appendChild(heading);
+
+      const grid = document.createElement('div');
+      grid.className = 'store-grid';
+      items.forEach(store => appendStoreCard(grid, store));
+      groupEl.appendChild(grid);
+      listEl.appendChild(groupEl);
+    });
+
+  } else {
+    // ── 全件表示時：かな順グループ表示 ──
+    const groups = new Map();
+    pageStores.forEach(store => {
+      const row = getKanaRow(store.yomi);
+      if (!groups.has(row.label)) groups.set(row.label, { ...row, items: [] });
+      groups.get(row.label).items.push(store);
+    });
+
+    const allLabels = [...ROW_ORDER, 'その他'];
+    allLabels.forEach(label => {
+      if (!groups.has(label)) return;
+      const { en, items } = groups.get(label);
+
+      const groupEl = document.createElement('div');
+      groupEl.className = 'kana-group';
+
+      const heading = document.createElement('div');
+      heading.className = 'kana-heading';
+      heading.innerHTML = `
+        <span class="kana-heading-char">${label}</span>
+        <span class="kana-heading-en">${en}</span>
+      `;
+      groupEl.appendChild(heading);
+
+      const grid = document.createElement('div');
+      grid.className = 'store-grid';
+      items.forEach(store => appendStoreCard(grid, store));
+      groupEl.appendChild(grid);
+      listEl.appendChild(groupEl);
+    });
+  }
 
   renderPagination(total);
+}
+
+function appendStoreCard(grid, store) {
+  const rankCfg = RANK_CONFIG[store.rank];
+  const card = document.createElement('div');
+  card.className = 'store-card';
+  card.setAttribute('role', 'button');
+  card.setAttribute('tabindex', '0');
+  card.innerHTML = `
+    <div class="card-body">
+      <span class="card-badge" style="background:${rankCfg.bg};color:${rankCfg.color}">${rankCfg.label}</span>
+      <p class="card-pref">${store.prefecture}</p>
+      <p class="card-name">${store.name}</p>
+    </div>
+    <span class="card-arrow">&#x2192;</span>
+  `;
+  card.addEventListener('click', () => openModal(store));
+  card.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(store); }
+  });
+  grid.appendChild(card);
 }
 
 function renderPagination(total) {
